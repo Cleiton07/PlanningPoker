@@ -1,0 +1,52 @@
+﻿using Flunt.Validations;
+
+namespace PlanningPoker.Domain.Entities
+{
+    public class Game : BaseEntity
+    {
+        public Game(string inviteCode, string name)
+        {
+            Id = Guid.NewGuid();
+            InviteCode = inviteCode?.Trim();
+            Name = name?.Trim();
+            Deck = null;
+            Players = new List<Player>();
+        }
+
+
+        public Guid Id { get; private set; }
+        public string InviteCode { get; private set; }
+        public string Name { get; private set; }
+        public Deck Deck { get; private set; }
+        public IReadOnlyCollection<Player> Players { get; private set; }
+
+
+        public void SetDeck(Deck deck)
+        {
+            if (deck != null && deck.IsValid)
+                Deck = deck;
+        }
+
+        public void AddPlayer(Player player)
+        {
+            if (player != null && player.IsValid)
+                Players = Players.Append(player).ToList();
+        }
+
+        public void AddPlayers(IEnumerable<Player> players)
+        {
+            if (players != null && players.Any())
+                foreach (var player in players) AddPlayer(player);
+        }
+
+        protected override void SubscribeRules()
+        {
+            AddNotifications(new Contract<Game>()
+                .IsNotEmpty(Id, nameof(Id), "Id is required")
+                .IsNotNullOrWhiteSpace(Name, nameof(Name), "Name is required")
+                .IsNotNullOrWhiteSpace(InviteCode, nameof(InviteCode), "Invite code is required")
+                .IsNotNull(Deck, nameof(Deck), "Deck is required")
+                .IsNotEmpty(Players, nameof(Player), "A game must have at least one player"));
+        }
+    }
+}
