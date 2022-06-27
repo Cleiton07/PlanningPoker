@@ -1,13 +1,12 @@
 ﻿using Flunt.Validations;
+using PlanningPoker.Domain.Notifications;
 
 namespace PlanningPoker.Domain.Entities
 {
-    public class Deck : BaseEntity
+    public class Deck : Notifiable
     {
         public Deck(string name)
         {
-            SubscribeRules();
-
             Id = Guid.NewGuid();
             Name = name?.Trim();
             Items = new List<DeckItem>();
@@ -43,7 +42,7 @@ namespace PlanningPoker.Domain.Entities
         }
 
 
-        protected override void SubscribeRules()
+        public override Task SubscribeRulesAsync(CancellationToken cancellationToken = default)
         {
             AddNotifications(new Contract<Deck>()
                 .IsNotEmpty(Id, nameof(Id), "Id is required")
@@ -52,6 +51,8 @@ namespace PlanningPoker.Domain.Entities
                 .IsLowerOrEqualsThan(Items.Count, 30, nameof(Items), "A deck must have a maximum of thirty items")
                 .IsFalse(HasARepeatedItemValue(), nameof(Items), "There cannot be items with repeated values")
                 .IsFalse(HasARepeatedItemOrder(), nameof(Items), "There cannot be items with repeated orders"));
+
+            return Task.CompletedTask;
         }
     }
 }

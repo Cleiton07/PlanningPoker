@@ -1,13 +1,14 @@
 ﻿using Flunt.Validations;
+using PlanningPoker.Domain.Notifications;
 
 namespace PlanningPoker.Domain.Entities
 {
-    public class Game : BaseEntity
+    public class Game : Notifiable
     {
-        public Game(string inviteCode, string name)
+        public Game(string name)
         {
             Id = Guid.NewGuid();
-            InviteCode = inviteCode?.Trim();
+            InviteCode = Guid.NewGuid().ToString();
             Name = name?.Trim();
             Deck = null;
             Players = new List<Player>();
@@ -39,7 +40,7 @@ namespace PlanningPoker.Domain.Entities
                 foreach (var player in players) AddPlayer(player);
         }
 
-        protected override void SubscribeRules()
+        public override Task SubscribeRulesAsync(CancellationToken cancellationToken = default)
         {
             AddNotifications(new Contract<Game>()
                 .IsNotEmpty(Id, nameof(Id), "Id is required")
@@ -47,6 +48,8 @@ namespace PlanningPoker.Domain.Entities
                 .IsNotNullOrWhiteSpace(InviteCode, nameof(InviteCode), "Invite code is required")
                 .IsNotNull(Deck, nameof(Deck), "Deck is required")
                 .IsNotEmpty(Players, nameof(Player), "A game must have at least one player"));
+
+            return Task.CompletedTask;
         }
     }
 }
