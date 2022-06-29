@@ -25,7 +25,18 @@ namespace PlanningPoker.Presentation.API.Controllers
         protected async Task<ActionResult<ResponseModel<T>>> ExecuteAsync<T>(Func<Task<T>> func, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested) throw new OperationCanceledException(cancellationToken);
-            return BuildResponse(await func());
+
+            T respData = default;
+            try
+            {
+                respData = await func();
+            }
+            catch (Exception ex)
+            {
+                _notification.AddError(ex);
+            }
+
+            return BuildResponse(respData);
         }
 
         private ActionResult<ResponseModel<T>> BuildResponse<T>(T data)
