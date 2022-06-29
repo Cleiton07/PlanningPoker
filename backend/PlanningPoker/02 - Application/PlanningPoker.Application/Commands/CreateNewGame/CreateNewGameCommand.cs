@@ -1,18 +1,18 @@
 ﻿using Flunt.Validations;
 using MediatR;
 using PlanningPoker.Domain.DTOs;
-using PlanningPoker.Domain.Interfaces.Repositories;
 using PlanningPoker.Domain.Notifications;
+using PlanningPoker.Infra.Data.UnitOfWork;
 
-namespace PlanningPoker.Domain.Business.Commands.CreateNewGame
+namespace PlanningPoker.Application.Commands.CreateNewGame
 {
     public class CreateNewGameCommand : Notifiable, IRequest<CreateNewGameCommandResponseDTO>
     {
-        private readonly IDeckRepository _deckRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CreateNewGameCommand(IDeckRepository deckRepository)
+        public CreateNewGameCommand(IUnitOfWork unitOfWork)
         {
-            _deckRepository = deckRepository;
+            _unitOfWork = unitOfWork;
         }
 
 
@@ -34,7 +34,7 @@ namespace PlanningPoker.Domain.Business.Commands.CreateNewGame
         private async Task<bool> DeckExistsAsync()
         {
             if (DeckId != Guid.Empty)
-                return await _deckRepository.ExistsAsync(DeckId);
+                return await _unitOfWork.DeckRepository.ExistsAsync(DeckId);
             return true;
         }
     }

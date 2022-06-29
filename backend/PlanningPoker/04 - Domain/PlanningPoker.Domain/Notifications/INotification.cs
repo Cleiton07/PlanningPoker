@@ -5,6 +5,7 @@
         bool Successfully { get; }
         IReadOnlyCollection<string> Messages { get; }
         IReadOnlyCollection<NotificationField> FieldMessages { get; }
+        IReadOnlyCollection<NotificationError> Errors { get; }
 
         void AddMessage(string message);
         void AddMessages(IEnumerable<string> messages);
@@ -12,6 +13,7 @@
         void AddFieldMessages(IEnumerable<NotificationField> fieldMessages);
         void AddNotificationFieldMessages(Notifiable notifiable);
         void AddNotificationMessages(Notifiable notifiable);
+        void AddError(Exception ex);
         void Clear();
     }
 }

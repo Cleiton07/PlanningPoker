@@ -1,6 +1,6 @@
 ﻿using PlanningPoker.Domain.Entities;
 
-namespace PlanningPoker.Domain.Interfaces.Repositories
+namespace PlanningPoker.Infra.Data.Repositories.Interfaces
 {
     public interface IDeckRepository
     {

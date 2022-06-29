@@ -5,4 +5,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\03 - Infra\PlanningPoker.Infra.Data\PlanningPoker.Infra.Data.csproj" />
+    <ProjectReference Include="..\..\04 - Domain\PlanningPoker.Domain\PlanningPoker.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Queries\" />
+  </ItemGroup>
+
 </Project>

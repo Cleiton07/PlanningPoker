@@ -2,19 +2,30 @@
 {
     public class Notification : INotification
     {
-        public bool Successfully => !Messages.Any() && !FieldMessages.Any();
-
-        public IReadOnlyCollection<string> Messages { get; private set; }
-
+        public IReadOnlyCollection<NotificationError> Errors { get; private set; }
         public IReadOnlyCollection<NotificationField> FieldMessages { get; private set; }
+        public IReadOnlyCollection<string> Messages { get; private set; }
+        public bool Successfully => !Errors.Any() && !FieldMessages.Any() && !Messages.Any();
 
 
         public Notification()
         {
             Messages = new List<string>();
             FieldMessages = new List<NotificationField>();
+            Errors = new List<NotificationError>();
         }
 
+
+        public void AddError(Exception ex)
+        {
+            if (ex != null)
+            {
+                var newErrors = new List<NotificationError>();
+                newErrors.AddRange(Errors);
+                newErrors.Add(new(ex));
+                Errors = newErrors;
+            }
+        }
 
         public void AddFieldMessage(NotificationField fieldMessage)
         {
