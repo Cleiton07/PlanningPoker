@@ -10,7 +10,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\..\02 - Application\PlanningPoker.Application\PlanningPoker.Application.csproj" />
+    <ProjectReference Include="..\..\03 - Infra\PlanningPoker.Infra.IoC\PlanningPoker.Infra.IoC.csproj" />
+    <ProjectReference Include="..\..\04 - Domain\PlanningPoker.Domain\PlanningPoker.Domain.csproj" />
   </ItemGroup>
 
 </Project>

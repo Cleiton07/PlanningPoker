@@ -21,6 +21,8 @@ namespace PlanningPoker.Application.Commands.CreateNewGame
         {
             try
             {
+                if (cancellationToken.IsCancellationRequested) throw new OperationCanceledException(cancellationToken);
+
                 _notification.AddNotificationFieldMessages(request);
                 if (!_notification.Successfully) return null;
 
@@ -50,7 +52,6 @@ namespace PlanningPoker.Application.Commands.CreateNewGame
                 _unitOfWork.Dispose();
                 return null;
             }
-
         }
     }
 }
