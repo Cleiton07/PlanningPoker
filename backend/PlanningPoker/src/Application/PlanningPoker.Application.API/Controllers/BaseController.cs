@@ -16,10 +16,10 @@ namespace PlanningPoker.Application.API.Controllers
             _mediator = mediator;
         }
 
-        protected async Task<ActionResult<ResponseModel<T>>> ExecuteAsync<T>(IRequest<T> command, CancellationToken cancellationToken)
+        protected async Task<ActionResult<ResponseModel<T>>> ExecuteAsync<T>(IRequest<T> request, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested) throw new OperationCanceledException(cancellationToken);
-            return await ExecuteAsync(() => _mediator.Send(command, cancellationToken), cancellationToken);
+            return await ExecuteAsync(() => _mediator.Send(request, cancellationToken), cancellationToken);
         }
 
         protected async Task<ActionResult<ResponseModel<T>>> ExecuteAsync<T>(Func<Task<T>> func, CancellationToken cancellationToken)
