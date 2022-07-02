@@ -25,9 +25,9 @@ namespace PlanningPoker.Infra.Data.Repositories
             => await _context.Players.AddAsync(player, cancellationToken);
 
         public async Task<bool> Handle(GetExistsGameByInviteCodeQuery request, CancellationToken cancellationToken)
-            => await _context.Games.AnyAsync(game => game.InviteCode == request.InviteCode, cancellationToken);
+            => await _context.Games.AsNoTracking().AnyAsync(game => game.InviteCode == request.InviteCode, cancellationToken);
 
         public async Task<Game> Handle(GetGameByInviteCodeQuery request, CancellationToken cancellationToken)
-            => await _context.Games.FirstOrDefaultAsync(game => game.InviteCode == request.InviteCode, cancellationToken);
+            => await _context.Games.AsNoTracking().FirstOrDefaultAsync(game => game.InviteCode == request.InviteCode, cancellationToken);
     }
 }
