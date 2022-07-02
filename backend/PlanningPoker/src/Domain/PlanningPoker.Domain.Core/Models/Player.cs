@@ -21,11 +21,13 @@ namespace PlanningPoker.Domain.Core.Models
             Id = id;
             Nickname = nickname?.Trim();
             GameId = gameId;
+            Excluded = false;
         }
 
 
         public Guid Id { get; private set; }
         public string Nickname { get; private set; }
+        public bool Excluded { get; private set; }
         public Guid GameId { get; private set; }
         public Game Game { get; private set; }
     }

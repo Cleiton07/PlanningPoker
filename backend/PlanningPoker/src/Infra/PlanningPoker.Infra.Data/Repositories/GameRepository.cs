@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using PlanningPoker.Domain.Core.DTOs;
 using PlanningPoker.Domain.Core.Interfaces.Repositories;
 using PlanningPoker.Domain.Core.Models;
 using PlanningPoker.Domain.Queries.GameQueries;
@@ -11,7 +12,10 @@ namespace PlanningPoker.Infra.Data.Repositories
         IRequestHandler<GetExistsGameByInviteCodeQuery, bool>,
         IRequestHandler<GetExistsGameByIdQuery, bool>,
         IRequestHandler<GetGameByInviteCodeQuery, Game>,
-        IRequestHandler<GetActiveRoundQuery, Round>
+        IRequestHandler<GetActiveRoundQuery, Round>,
+        IRequestHandler<GetRoundPlaysQuery, IList<PlayerPlayDTO>>,
+        IRequestHandler<GetGamePlayersQuery, IList<PlayerDTO>>,
+        IRequestHandler<GetGameRoundsQuery, IList<RoundDTO>>
     {
         private readonly IPlanningPokerDbContext _context;
 
@@ -40,6 +44,31 @@ namespace PlanningPoker.Infra.Data.Repositories
 
         public async Task<Round> Handle(GetActiveRoundQuery request, CancellationToken cancellationToken)
             => await _context.Rounds.AsNoTracking().FirstOrDefaultAsync(round => round.GameId == request.GameId && round.Active, cancellationToken);
+
+        public async Task<IList<PlayerPlayDTO>> Handle(GetRoundPlaysQuery request, CancellationToken cancellationToken)
+        {
+            var query = from play in _context.Plays
+                        join deckItem in _context.DeckItems on play.DeckItemId equals deckItem.Id
+                        join round in _context.Rounds on play.RoundId equals round.Id
+                        join player in _context.Players on play.PlayerId equals player.Id
+                        where round.Id == request.RoundId
+                        select new PlayerPlayDTO(round.Id, round.Name, player.Id, player.Nickname,
+                            deckItem.Id, deckItem.Value, play.DateTimeOfPlay);
+
+            return await query.ToListAsync(cancellationToken);
+        }
+
+        public async Task<IList<PlayerDTO>> Handle(GetGamePlayersQuery request, CancellationToken cancellationToken)
+            => await _context.Players
+                .Where(player => player.GameId == request.GameId)
+                .Select(player => new PlayerDTO(player.Id, player.Nickname, player.Excluded))
+                .ToListAsync(cancellationToken);
+
+        public async Task<IList<RoundDTO>> Handle(GetGameRoundsQuery request, CancellationToken cancellationToken)
+            => await _context.Rounds
+                .Where(round => round.GameId == request.GameId)
+                .Select(round => new RoundDTO(round.Id, round.Name, round.Active))
+                .ToListAsync(cancellationToken);
 
         public async Task UpdateRoundAsync(Round round, CancellationToken cancellationToken = default)
             => await _context.UpdateAsync(round, cancellationToken);

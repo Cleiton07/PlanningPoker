@@ -37,8 +37,15 @@ namespace PlanningPoker.Domain.Commands.AddPlayerInTheGame
                 var player = new Player(request.PlayerNickname, game.Id);
                 await _gameRepository.AddPlayerAsync(player, cancellationToken);
 
+                var players = await _mediator.Send(new GetGamePlayersQuery(game.Id), cancellationToken);
+                var rounds = await _mediator.Send(new GetGameRoundsQuery(game.Id), cancellationToken);
+                var activeRound = await _mediator.Send(new GetActiveRoundQuery(game.Id), cancellationToken);
+                var activeRoundPlays = activeRound is null 
+                    ? null 
+                    : await _mediator.Send(new GetRoundPlaysQuery(activeRound.Id), cancellationToken);
+
                 await _unitOfWork.CommitAsync(cancellationToken);
-                return new(player.Id, game.Id);
+                return new(player, game, activeRound, players, rounds, activeRoundPlays);
             }
             catch (Exception ex)
             {
