@@ -2,28 +2,28 @@
 {
     public class Play
     {
-        public Play(Guid id, Guid gameId, Guid playerId, Guid deckItemId)
+        public Play(Guid id, Guid roundId, Guid playerId, Guid deckItemId)
         {
-            SetInitialValues(id, gameId, playerId, deckItemId);
+            SetInitialValues(id, roundId, playerId, deckItemId);
         }
 
-        public Play(Guid gameId, Guid playerId, Guid deckItemId)
+        public Play(Guid roundId, Guid playerId, Guid deckItemId)
         {
-            SetInitialValues(Guid.NewGuid(), gameId, playerId, deckItemId);
+            SetInitialValues(Guid.NewGuid(), roundId, playerId, deckItemId);
         }
 
-        private void SetInitialValues(Guid id, Guid gameId, Guid playerId, Guid deckItemId)
+        private void SetInitialValues(Guid id, Guid roundId, Guid playerId, Guid deckItemId)
         {
             Id = id;
-            GameId = gameId;
+            RoundId = roundId;
             PlayerId = playerId;
             DeckItemId = deckItemId;
         }
 
 
         public Guid Id { get; private set; }
-        public Guid GameId { get; private set; }
-        public Game Game { get; private set; }
+        public Guid RoundId { get; private set; }
+        public Round Round { get; private set; }
         public Guid PlayerId { get; private set; }
         public Player Player { get; private set; }
         public Guid DeckItemId { get; private set; }
