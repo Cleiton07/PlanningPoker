@@ -8,26 +8,25 @@ namespace PlanningPoker.Domain.Commands.AddPlayerInTheGame
 {
     public class AddPlayerInTheGameCommand : Notifiable, IRequest<AddPlayerInTheGameCommandResponseDTO>
     {
-        private readonly IMediator _mediator;
-
-        public AddPlayerInTheGameCommand(IMediator mediator)
+        public AddPlayerInTheGameCommand(string playerNickname, string gameInviteCode)
         {
-            _mediator = mediator;
+            PlayerNickname = playerNickname;
+            GameInviteCode = gameInviteCode;
         }
 
-        public string PlayerNickname { get; set; }
-        public string GameInviteCode { get; set; }
+        public string PlayerNickname { get; private set; }
+        public string GameInviteCode { get; private set; }
 
 
-        public override async Task SubscribeRulesAsync(CancellationToken cancellationToken = default)
+        public override async Task SubscribeRulesAsync(IMediator mediator, CancellationToken cancellationToken = default)
         {
             AddNotifications(new Contract<AddPlayerInTheGameCommand>()
                 .IsNotNullOrWhiteSpace(PlayerNickname, nameof(PlayerNickname), "Player nickname is required")
                 .IsNotNullOrWhiteSpace(GameInviteCode, nameof(GameInviteCode), "Game invite code is required")
-                .IsTrue(await GameInviteCodeIsValidAsync(cancellationToken), nameof(GameInviteCode), "Invalid game invite code"));
+                .IsTrue(await GameInviteCodeIsValidAsync(mediator, cancellationToken), nameof(GameInviteCode), "Invalid game invite code"));
         }
 
-        private async Task<bool> GameInviteCodeIsValidAsync(CancellationToken cancellationToken)
-            => await _mediator.Send(new GetExistsGameByInviteCodeQuery(GameInviteCode), cancellationToken);
+        private async Task<bool> GameInviteCodeIsValidAsync(IMediator mediator, CancellationToken cancellationToken)
+            => await mediator.Send(new GetExistsGameByInviteCodeQuery(GameInviteCode), cancellationToken);
     }
 }

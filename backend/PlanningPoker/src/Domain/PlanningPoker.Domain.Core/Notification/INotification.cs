@@ -11,8 +11,7 @@
         void AddMessages(IEnumerable<string> messages);
         void AddFieldMessage(NotificationField fieldMessage);
         void AddFieldMessages(IEnumerable<NotificationField> fieldMessages);
-        Task AddNotificationFieldMessages(Notifiable notifiable);
-        Task AddNotificationMessages(Notifiable notifiable);
+        Task AddFieldMessages(Notifiable notifiable, CancellationToken cancellationToken = default);
         void AddError(Exception ex);
         void Clear();
     }

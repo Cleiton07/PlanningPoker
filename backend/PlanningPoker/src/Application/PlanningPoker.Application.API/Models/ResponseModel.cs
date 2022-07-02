@@ -12,9 +12,9 @@ namespace PlanningPoker.Application.API.Models
             Data = data;
         }
 
-        IList<NotificationError> Errors { get; set; }
-        IList<NotificationField> FieldMessages { get; set; }
-        IList<string> Messages { get; set; }
+        public IList<NotificationError> Errors { get; set; }
+        public IList<NotificationField> FieldMessages { get; set; }
+        public IList<string> Messages { get; set; }
         public bool Successfully => !Errors.Any() && !FieldMessages.Any() && !Messages.Any();
         public T Data { get; set; }
     }

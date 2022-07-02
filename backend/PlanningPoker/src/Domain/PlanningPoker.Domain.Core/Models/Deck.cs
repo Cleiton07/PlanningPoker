@@ -2,6 +2,8 @@
 {
     public class Deck
     {
+        public Deck() { }
+
         public Deck(Guid id, string name, IEnumerable<DeckItem> items)
         {
             SetInitialValues(id, name, items);

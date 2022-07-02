@@ -2,6 +2,8 @@
 {
     public class Player
     {
+        public Player() { }
+
         public Player(Guid id, string nickname, Guid gameId)
         {
             SetInitialValues(id, nickname, gameId);

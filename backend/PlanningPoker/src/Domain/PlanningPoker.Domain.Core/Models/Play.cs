@@ -2,6 +2,8 @@
 {
     public class Play
     {
+        public Play() { }
+
         public Play(Guid id, Guid roundId, Guid playerId, Guid deckItemId)
         {
             SetInitialValues(id, roundId, playerId, deckItemId);

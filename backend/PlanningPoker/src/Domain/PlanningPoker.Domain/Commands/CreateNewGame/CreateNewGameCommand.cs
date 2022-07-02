@@ -8,30 +8,30 @@ namespace PlanningPoker.Application.Commands.CreateNewGame
 {
     public class CreateNewGameCommand : Notifiable, IRequest<CreateNewGameCommandResponseDTO>
     {
-        private readonly IMediator _mediator;
-
-        public CreateNewGameCommand(IMediator mediator)
+        public CreateNewGameCommand(string name, Guid deckId, string playerNickname)
         {
-            _mediator = mediator;
+            Name = name;
+            DeckId = deckId;
+            PlayerNickname = playerNickname;
         }
 
-        public string Name { get; set; }
-        public Guid DeckId { get; set; }
-        public string PlayerNickname { get; set; }
+        public string Name { get; private set; }
+        public Guid DeckId { get; private set; }
+        public string PlayerNickname { get; private set; }
 
 
-        public override async Task SubscribeRulesAsync(CancellationToken cancellationToken = default)
+        public override async Task SubscribeRulesAsync(IMediator mediator, CancellationToken cancellationToken = default)
         {
             AddNotifications(new Contract<CreateNewGameCommand>()
                 .IsNotNullOrWhiteSpace(Name, nameof(Name), "Name is required")
                 .IsNotNullOrWhiteSpace(PlayerNickname, nameof(PlayerNickname), "Player nickname is required")
-                .IsNotEmpty(DeckId, nameof(DeckId), "Deck is required")
-                .IsTrue(DeckId != Guid.Empty && await DeckExistsAsync(), nameof(DeckId), "Deck entered not exists"));
+                .IsTrue(await DeckIsValidAsync(mediator, cancellationToken), nameof(DeckId), "Deck is not valid"));
         }
 
-        private async Task<bool> DeckExistsAsync()
+        private async Task<bool> DeckIsValidAsync(IMediator mediator, CancellationToken cancellationToken)
         {
-            return await _mediator.Send(new GetExistsDeckByIdQuery(DeckId));
+            if (DeckId == Guid.Empty) return false;
+            return await mediator.Send(new GetExistsDeckByIdQuery(DeckId), cancellationToken);
         }
     }
 }

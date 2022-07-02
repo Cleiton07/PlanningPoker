@@ -2,6 +2,8 @@
 {
     public class Round
     {
+        public Round() { }
+
         public Round(Guid id, Guid gameId, string name, bool active)
         {
             SetInitialValues(id, gameId, name, active);

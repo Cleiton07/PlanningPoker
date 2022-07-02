@@ -2,6 +2,8 @@
 {
     public class Game
     {
+        public Game() { }
+
         public Game(Guid id, string name, Guid deckId)
         {
             SetInitialValues(id, name, Guid.NewGuid().ToString(), deckId);

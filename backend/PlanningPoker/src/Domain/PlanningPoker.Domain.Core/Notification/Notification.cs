@@ -1,19 +1,24 @@
-﻿namespace PlanningPoker.Domain.Core.Notification
+﻿using MediatR;
+
+namespace PlanningPoker.Domain.Core.Notification
 {
     public class Notification : INotification
     {
-        public IReadOnlyCollection<NotificationError> Errors { get; private set; }
-        public IReadOnlyCollection<NotificationField> FieldMessages { get; private set; }
-        public IReadOnlyCollection<string> Messages { get; private set; }
-        public bool Successfully => !Errors.Any() && !FieldMessages.Any() && !Messages.Any();
+        private readonly IMediator _mediator;
 
-
-        public Notification()
+        public Notification(IMediator mediator)
         {
             Messages = new List<string>();
             FieldMessages = new List<NotificationField>();
             Errors = new List<NotificationError>();
+            _mediator = mediator;
         }
+
+
+        public IReadOnlyCollection<NotificationError> Errors { get; private set; }
+        public IReadOnlyCollection<NotificationField> FieldMessages { get; private set; }
+        public IReadOnlyCollection<string> Messages { get; private set; }
+        public bool Successfully => !Errors.Any() && !FieldMessages.Any() && !Messages.Any();
 
 
         public void AddError(Exception ex)
@@ -53,6 +58,17 @@
                     AddFieldMessage(fieldMessage);
         }
 
+        public async Task AddFieldMessages(Notifiable notifiable, CancellationToken cancellationToken = default)
+        {
+            if (cancellationToken.IsCancellationRequested) throw new OperationCanceledException(cancellationToken);
+
+            await notifiable.SubscribeRulesAsync(_mediator, cancellationToken);
+            if (notifiable.IsValid) return;
+
+            foreach (var message in notifiable.Notifications)
+                AddFieldMessage(new NotificationField(message.Key, message.Message));
+        }
+
         public void AddMessage(string message)
         {
             if (!string.IsNullOrWhiteSpace(message))
@@ -69,24 +85,6 @@
             if (messages != null)
                 foreach (var message in messages)
                     AddMessage(message);
-        }
-
-        public async Task AddNotificationFieldMessages(Notifiable notifiable)
-        {
-            await notifiable.SubscribeRulesAsync();
-            if (notifiable.IsValid) return;
-
-            foreach (var message in notifiable.Notifications)
-                AddFieldMessage(new NotificationField(message.Key, message.Message));
-        }
-
-        public async Task AddNotificationMessages(Notifiable notifiable)
-        {
-            await notifiable.SubscribeRulesAsync();
-            if (notifiable.IsValid) return;
-
-            foreach (var message in notifiable.Notifications)
-                AddMessage(message.Message);
         }
 
         public void Clear()

@@ -1,17 +1,16 @@
 ﻿using PlanningPoker.Infra.IoC;
-using System.Reflection;
 
 namespace PlanningPoker.Application.API
 {
     public static class Startup
     {
-        public static void ConfigureServices(IServiceCollection services, Assembly[] executingAssemblies)
+        public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
-            services.AddPlanningPoker(executingAssemblies);
+            services.AddPlanningPoker(configuration);
         }
 
         public static void Configure(WebApplication app)

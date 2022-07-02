@@ -29,13 +29,13 @@ namespace PlanningPoker.Domain.Commands.AddPlayerInTheGame
             {
                 if (cancellationToken.IsCancellationRequested) throw new OperationCanceledException(cancellationToken);
 
-                await _notification.AddNotificationFieldMessages(request);
+                await _notification.AddFieldMessages(request, cancellationToken);
                 if (!_notification.Successfully) return null;
 
-                var game = await _mediator.Send(new GetGameByInviteCodeQuery(request.GameInviteCode));
+                var game = await _mediator.Send(new GetGameByInviteCodeQuery(request.GameInviteCode), cancellationToken);
 
                 var player = new Player(request.PlayerNickname, game.Id);
-                await _gameRepository.AddPlayerAsync(player);
+                await _gameRepository.AddPlayerAsync(player, cancellationToken);
 
                 await _unitOfWork.CommitAsync(cancellationToken);
                 return new() { GameId = game.Id, PlayerId = player.Id };

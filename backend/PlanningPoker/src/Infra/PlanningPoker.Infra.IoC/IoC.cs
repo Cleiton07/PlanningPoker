@@ -7,29 +7,23 @@ using PlanningPoker.Domain.Core.Interfaces.Repositories;
 using PlanningPoker.Infra.Data;
 using PlanningPoker.Infra.Data.Contexts;
 using PlanningPoker.Infra.Data.Repositories;
-using System.Reflection;
 using Notifications = PlanningPoker.Domain.Core.Notification;
 
 namespace PlanningPoker.Infra.IoC
 {
     public static class IoC
     {
-        public static IConfigurationRoot Configuration = new ConfigurationBuilder()
-            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-            .AddJsonFile("appsettings.json")
-            .Build();
-
-        public static void AddPlanningPoker(this IServiceCollection services, Assembly[] executingAssemblies)
+        public static void AddPlanningPoker(this IServiceCollection services, IConfiguration configuration)
         {
             services
-                .AddMediatR(executingAssemblies)
+                .AddInfraData(configuration)
                 .AddDomain()
-                .AddInfraData();
+                .AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
         }
 
-        private static IServiceCollection AddInfraData(this IServiceCollection services)
+        private static IServiceCollection AddInfraData(this IServiceCollection services, IConfiguration configuration)
         {
-            var connection = Configuration.GetConnectionString("DefaultConnection");
+            var connection = configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<IPlanningPokerDbContext, PlanningPokerDbContext>(options =>
                 options.UseMySql(connection, ServerVersion.AutoDetect(connection)), ServiceLifetime.Scoped);
 
