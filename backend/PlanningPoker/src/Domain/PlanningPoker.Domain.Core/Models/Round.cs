@@ -20,6 +20,7 @@
 
         public Guid Id { get; private set; }
         public Guid GameId { get; private set; }
+        public Game Game { get; private set; }
         public string RoundName { private get; set; }
     }
 }
