@@ -1,16 +1,23 @@
-﻿using Flunt.Validations;
-using PlanningPoker.Domain.Core.Notification;
-
-namespace PlanningPoker.Domain.Core.Models
+﻿namespace PlanningPoker.Domain.Core.Models
 {
-    public class Game : Notifiable
+    public class Game
     {
-        public Game(string name)
+        public Game(Guid id, string name, Guid deckId)
         {
-            Id = Guid.NewGuid();
-            InviteCode = Guid.NewGuid().ToString();
+            SetInitialValues(id, name, Guid.NewGuid().ToString(), deckId);
+        }
+
+        public Game(string name, Guid deckId)
+        {
+            SetInitialValues(Guid.NewGuid(), name, Guid.NewGuid().ToString(), deckId);
+        }
+
+        private void SetInitialValues(Guid id, string name, string inviteCode, Guid deckId)
+        {
+            Id = id;
             Name = name?.Trim();
-            Deck = null;
+            InviteCode = inviteCode?.Trim();
+            DeckId = deckId;
             Players = new List<Player>();
         }
 
@@ -18,38 +25,8 @@ namespace PlanningPoker.Domain.Core.Models
         public Guid Id { get; private set; }
         public string InviteCode { get; private set; }
         public string Name { get; private set; }
+        public Guid DeckId { get; private set; }
         public Deck Deck { get; private set; }
-        public IReadOnlyCollection<Player> Players { get; private set; }
-
-
-        public void SetDeck(Deck deck)
-        {
-            if (deck != null && deck.IsValid)
-                Deck = deck;
-        }
-
-        public void AddPlayer(Player player)
-        {
-            if (player != null && player.IsValid)
-                Players = Players.Append(player).ToList();
-        }
-
-        public void AddPlayers(IEnumerable<Player> players)
-        {
-            if (players != null && players.Any())
-                foreach (var player in players) AddPlayer(player);
-        }
-
-        public override Task SubscribeRulesAsync(CancellationToken cancellationToken = default)
-        {
-            AddNotifications(new Contract<Game>()
-                .IsNotEmpty(Id, nameof(Id), "Id is required")
-                .IsNotNullOrWhiteSpace(Name, nameof(Name), "Name is required")
-                .IsNotNullOrWhiteSpace(InviteCode, nameof(InviteCode), "Invite code is required")
-                .IsNotNull(Deck, nameof(Deck), "Deck is required")
-                .IsNotEmpty(Players, nameof(Player), "A game must have at least one player"));
-
-            return Task.CompletedTask;
-        }
+        public IList<Player> Players { get; private set; }
     }
 }

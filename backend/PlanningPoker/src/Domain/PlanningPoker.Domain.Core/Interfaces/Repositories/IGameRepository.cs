@@ -4,6 +4,7 @@ namespace PlanningPoker.Domain.Core.Interfaces.Repositories
 {
     public interface IGameRepository
     {
-        Task<Guid> AddAsync(Game game, CancellationToken cancellationToken = default);
+        Task AddAsync(Game game, CancellationToken cancellationToken = default);
+        Task AddPlayerAsync(Player player, CancellationToken cancellationToken = default);
     }
 }

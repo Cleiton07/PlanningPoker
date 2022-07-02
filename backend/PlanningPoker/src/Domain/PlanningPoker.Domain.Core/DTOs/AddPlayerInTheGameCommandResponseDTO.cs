@@ -1,9 +1,8 @@
 ﻿namespace PlanningPoker.Domain.Core.DTOs
 {
-    public class CreateNewGameCommandResponseDTO
+    public class AddPlayerInTheGameCommandResponseDTO
     {
         public Guid GameId { get; set; }
-        public string InviteCode { get; set; }
         public Guid PlayerId { get; set; }
     }
 }

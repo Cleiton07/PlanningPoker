@@ -17,15 +17,14 @@ namespace PlanningPoker.Application.Commands.CreateNewGame
 
         public string Name { get; set; }
         public Guid DeckId { get; set; }
-        public CreateNewGamePlayerDataDTO Player { get; set; }
+        public string PlayerNickname { get; set; }
 
 
         public override async Task SubscribeRulesAsync(CancellationToken cancellationToken = default)
         {
             AddNotifications(new Contract<CreateNewGameCommand>()
                 .IsNotNullOrWhiteSpace(Name, nameof(Name), "Name is required")
-                .IsNotNullOrWhiteSpace(Player?.Nickname, nameof(Player), "Player nickname is required")
-                .IsNotNullOrWhiteSpace(Player?.ConnectionId, nameof(Player), "Player connection is required")
+                .IsNotNullOrWhiteSpace(PlayerNickname, nameof(PlayerNickname), "Player nickname is required")
                 .IsNotEmpty(DeckId, nameof(DeckId), "Deck is required")
                 .IsTrue(DeckId != Guid.Empty && await DeckExistsAsync(), nameof(DeckId), "Deck entered not exists"));
         }
