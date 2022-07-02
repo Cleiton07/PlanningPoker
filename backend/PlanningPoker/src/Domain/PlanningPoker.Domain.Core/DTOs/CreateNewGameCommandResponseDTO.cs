@@ -2,8 +2,15 @@
 {
     public class CreateNewGameCommandResponseDTO
     {
-        public Guid GameId { get; set; }
-        public string InviteCode { get; set; }
-        public Guid PlayerId { get; set; }
+        public CreateNewGameCommandResponseDTO(Guid gameId, string inviteCode, Guid playerId)
+        {
+            GameId = gameId;
+            InviteCode = inviteCode;
+            PlayerId = playerId;
+        }
+
+        public Guid GameId { get; private set; }
+        public string InviteCode { get; private set; }
+        public Guid PlayerId { get; private set; }
     }
 }

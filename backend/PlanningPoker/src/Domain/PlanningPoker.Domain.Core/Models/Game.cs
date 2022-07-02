@@ -1,6 +1,8 @@
-﻿namespace PlanningPoker.Domain.Core.Models
+﻿using PlanningPoker.Domain.Core.Interfaces;
+
+namespace PlanningPoker.Domain.Core.Models
 {
-    public class Game
+    public class Game : IModel
     {
         public Game() { }
 

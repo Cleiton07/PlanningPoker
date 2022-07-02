@@ -1,6 +1,8 @@
-﻿namespace PlanningPoker.Domain.Core.Models
+﻿using PlanningPoker.Domain.Core.Interfaces;
+
+namespace PlanningPoker.Domain.Core.Models
 {
-    public class Round
+    public class Round : IModel
     {
         public Round() { }
 
@@ -22,10 +24,14 @@
             Active = active;
         }
 
+
         public Guid Id { get; private set; }
         public Guid GameId { get; private set; }
         public Game Game { get; private set; }
-        public string Name { private get; set; }
+        public string Name { get; private set; }
         public bool Active { get; private set; }
+
+
+        public void Inactivate() => Active = false;
     }
 }

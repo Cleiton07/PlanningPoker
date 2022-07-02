@@ -3,24 +3,28 @@ using PlanningPoker.Domain.Core.DTOs;
 using PlanningPoker.Domain.Core.Interfaces;
 using PlanningPoker.Domain.Core.Interfaces.Repositories;
 using PlanningPoker.Domain.Core.Models;
+using PlanningPoker.Domain.Queries.GameQueries;
 using Notifications = PlanningPoker.Domain.Core.Notification;
 
-namespace PlanningPoker.Application.Commands.CreateNewGame
+namespace PlanningPoker.Domain.Commands.StartNewRound
 {
-    public class CreateNewGameCommandHandler : IRequestHandler<CreateNewGameCommand, CreateNewGameCommandResponseDTO>
+    public class StartNewRoundCommandHandler : IRequestHandler<StartNewRoundCommand, StartNewRoundCommandResponseDTO>
     {
         private readonly Notifications.INotification _notification;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IGameRepository _gameRepository;
+        private readonly IMediator _mediator;
 
-        public CreateNewGameCommandHandler(Notifications.INotification notification, IUnitOfWork unitOfWork, IGameRepository gameRepository)
+        public StartNewRoundCommandHandler(Notifications.INotification notification, IUnitOfWork unitOfWork,
+            IGameRepository gameRepository, IMediator mediator)
         {
             _notification = notification;
             _unitOfWork = unitOfWork;
             _gameRepository = gameRepository;
+            _mediator = mediator;
         }
 
-        public async Task<CreateNewGameCommandResponseDTO> Handle(CreateNewGameCommand request, CancellationToken cancellationToken)
+        public async Task<StartNewRoundCommandResponseDTO> Handle(StartNewRoundCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -29,14 +33,18 @@ namespace PlanningPoker.Application.Commands.CreateNewGame
                 await _notification.AddFieldMessages(request, cancellationToken);
                 if (!_notification.Successfully) return null;
 
-                var game = new Game(request.Name, request.DeckId);
-                await _gameRepository.AddAsync(game, cancellationToken);
+                var activeRound = await _mediator.Send(new GetActiveRoundQuery(request.GameId), cancellationToken);
+                if (activeRound != null)
+                {
+                    activeRound.Inactivate();
+                    await _gameRepository.UpdateRoundAsync(activeRound, cancellationToken);
+                }
 
-                var player = new Player(request.PlayerNickname, game.Id);
-                await _gameRepository.AddPlayerAsync(player, cancellationToken);
+                var round = new Round(request.GameId, request.RoundName);
+                await _gameRepository.AddRoundAsync(round, cancellationToken);
 
                 await _unitOfWork.CommitAsync(cancellationToken);
-                return new(game.Id, game.InviteCode, player.Id);
+                return new(round.Id, round.Name, round.GameId);
             }
             catch (Exception ex)
             {

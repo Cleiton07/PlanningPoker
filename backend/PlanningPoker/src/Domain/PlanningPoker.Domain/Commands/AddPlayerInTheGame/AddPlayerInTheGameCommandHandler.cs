@@ -38,7 +38,7 @@ namespace PlanningPoker.Domain.Commands.AddPlayerInTheGame
                 await _gameRepository.AddPlayerAsync(player, cancellationToken);
 
                 await _unitOfWork.CommitAsync(cancellationToken);
-                return new() { GameId = game.Id, PlayerId = player.Id };
+                return new(player.Id, game.Id);
             }
             catch (Exception ex)
             {

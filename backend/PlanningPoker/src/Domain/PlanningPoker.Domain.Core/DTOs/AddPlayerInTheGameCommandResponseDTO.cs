@@ -2,7 +2,13 @@
 {
     public class AddPlayerInTheGameCommandResponseDTO
     {
-        public Guid GameId { get; set; }
-        public Guid PlayerId { get; set; }
+        public AddPlayerInTheGameCommandResponseDTO(Guid playerId, Guid gameId)
+        {
+            PlayerId = playerId;
+            GameId = gameId;
+        }
+
+        public Guid PlayerId { get; private set; }
+        public Guid GameId { get; private set; }
     }
 }
