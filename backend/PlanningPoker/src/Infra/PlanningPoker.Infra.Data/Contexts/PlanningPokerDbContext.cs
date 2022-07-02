@@ -10,6 +10,13 @@ namespace PlanningPoker.Infra.Data.Contexts
         public DbSet<Game> Games { get; set; }
         public DbSet<Player> Players { get; set; }
 
+
+        public PlanningPokerDbContext(DbContextOptions options) : base(options)
+        {
+
+        }
+
+
         public void DicardChanges() => ChangeTracker.Clear();
     }
 }
