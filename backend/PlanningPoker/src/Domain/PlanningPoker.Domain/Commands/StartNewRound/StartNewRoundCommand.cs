@@ -19,14 +19,20 @@ namespace PlanningPoker.Domain.Commands.StartNewRound
 
         public override async Task SubscribeRulesAsync(IMediator mediator, CancellationToken cancellationToken = default)
         {
+            var gameIdValidationResult = await GameIdIsValidAsync(mediator, cancellationToken);
+
             AddNotifications(new Contract<StartNewRoundCommand>()
-                .IsTrue(await GameIdIsValidAsync(mediator, cancellationToken), nameof(GameId), "Invalid game id"));
+                .IsTrue(gameIdValidationResult.IsValid, nameof(GameId), gameIdValidationResult.Msg));
         }
 
-        private async Task<bool> GameIdIsValidAsync(IMediator mediator, CancellationToken cancellationToken)
+        private async Task<(bool IsValid, string Msg)> GameIdIsValidAsync(IMediator mediator, CancellationToken cancellationToken)
         {
-            if(GameId == Guid.Empty) return false;
-            return await mediator.Send(new GetExistsGameByIdQuery(GameId), cancellationToken);
+            if (GameId == Guid.Empty)
+                return (false, "Game id is required");
+            if (!await mediator.Send(new GetExistsGameByIdQuery(GameId), cancellationToken))
+                return (false, "There is no game with the given id");
+
+            return (true, "");
         }
     }
 }

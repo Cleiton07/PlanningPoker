@@ -22,16 +22,22 @@ namespace PlanningPoker.Application.Commands.CreateNewGame
 
         public override async Task SubscribeRulesAsync(IMediator mediator, CancellationToken cancellationToken = default)
         {
+            var deckIdValidationResult = await DeckIsValidAsync(mediator, cancellationToken);
+
             AddNotifications(new Contract<CreateNewGameCommand>()
                 .IsNotNullOrWhiteSpace(Name, nameof(Name), "Name is required")
                 .IsNotNullOrWhiteSpace(PlayerNickname, nameof(PlayerNickname), "Player nickname is required")
-                .IsTrue(await DeckIsValidAsync(mediator, cancellationToken), nameof(DeckId), "Deck is not valid"));
+                .IsTrue(deckIdValidationResult.IsValid, nameof(DeckId), deckIdValidationResult.Msg));
         }
 
-        private async Task<bool> DeckIsValidAsync(IMediator mediator, CancellationToken cancellationToken)
+        private async Task<(bool IsValid, string Msg)> DeckIsValidAsync(IMediator mediator, CancellationToken cancellationToken)
         {
-            if (DeckId == Guid.Empty) return false;
-            return await mediator.Send(new GetExistsDeckByIdQuery(DeckId), cancellationToken);
+            if (DeckId == Guid.Empty)
+                return (false, "Deck id is required");
+            if (!await mediator.Send(new GetExistsDeckByIdQuery(DeckId), cancellationToken))
+                return (false, "There is no deck with the given id");
+
+            return (true, "");
         }
     }
 }
