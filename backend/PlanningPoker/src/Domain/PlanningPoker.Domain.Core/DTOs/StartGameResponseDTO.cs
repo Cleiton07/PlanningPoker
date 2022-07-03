@@ -2,14 +2,12 @@
 
 namespace PlanningPoker.Domain.Core.DTOs
 {
-    public class AddPlayerInTheGameCommandResponseDTO
+    public class StartGameResponseDTO
     {
-        public AddPlayerInTheGameCommandResponseDTO(Player player, Game game, Deck deck,
+        public StartGameResponseDTO(Player player, Game game, Deck deck,
             IList<DeckItemDTO> deckItems, IList<PlayerDTO> players, IList<RoundDTO> rounds, IList<PlayerPlayDTO> activeRoundPlays)
         {
-            PlayerId = player.Id;
-            PlayerNickname = player.Nickname;
-
+            Player = new(player.Id, player.Nickname, player.Excluded);
             Game = new(
                 game.Id,
                 game.Name,
@@ -20,8 +18,7 @@ namespace PlanningPoker.Domain.Core.DTOs
             );
         }
 
-        public Guid PlayerId { get; private set; }
-        public string PlayerNickname { get; private set; }
         public GameDTO Game { get; private set; }
+        public PlayerDTO Player { get; private set; }
     }
 }

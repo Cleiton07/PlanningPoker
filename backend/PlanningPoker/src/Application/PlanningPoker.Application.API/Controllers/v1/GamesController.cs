@@ -8,8 +8,8 @@ using Notifications = PlanningPoker.Domain.Core.Notification;
 
 namespace PlanningPoker.Application.API.Controllers.v1
 {
-    using PostGameResponse = Task<ActionResult<ResponseModel<CreateNewGameCommandResponseDTO>>>;
-    using PostPlayerResponse = Task<ActionResult<ResponseModel<AddPlayerInTheGameCommandResponseDTO>>>;
+    using PostGameResponse = Task<ActionResult<ResponseModel<StartGameResponseDTO>>>;
+    using PostPlayerResponse = Task<ActionResult<ResponseModel<StartGameResponseDTO>>>;
 
     [Route("api/v1/games")]
     [ApiController]

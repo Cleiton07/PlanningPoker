@@ -6,7 +6,7 @@ using PlanningPoker.Domain.Queries.GameQueries;
 
 namespace PlanningPoker.Domain.Commands.AddPlayerInTheGame
 {
-    public class AddPlayerInTheGameCommand : Notifiable, IRequest<AddPlayerInTheGameCommandResponseDTO>
+    public class AddPlayerInTheGameCommand : Notifiable, IRequest<StartGameResponseDTO>
     {
         public AddPlayerInTheGameCommand(string playerNickname, string gameInviteCode)
         {

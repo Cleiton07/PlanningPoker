@@ -6,7 +6,7 @@ using PlanningPoker.Domain.Queries.DeckQueries;
 
 namespace PlanningPoker.Application.Commands.CreateNewGame
 {
-    public class CreateNewGameCommand : Notifiable, IRequest<CreateNewGameCommandResponseDTO>
+    public class CreateNewGameCommand : Notifiable, IRequest<StartGameResponseDTO>
     {
         public CreateNewGameCommand(string name, Guid deckId, string playerNickname)
         {

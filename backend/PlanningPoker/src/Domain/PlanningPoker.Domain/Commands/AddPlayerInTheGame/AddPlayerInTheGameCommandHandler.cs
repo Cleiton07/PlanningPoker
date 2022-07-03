@@ -1,15 +1,15 @@
 ﻿using MediatR;
+using PlanningPoker.Domain.Builders;
 using PlanningPoker.Domain.Core.DTOs;
 using PlanningPoker.Domain.Core.Interfaces;
 using PlanningPoker.Domain.Core.Interfaces.Repositories;
 using PlanningPoker.Domain.Core.Models;
-using PlanningPoker.Domain.Queries.DeckQueries;
 using PlanningPoker.Domain.Queries.GameQueries;
 using Notifications = PlanningPoker.Domain.Core.Notification;
 
 namespace PlanningPoker.Domain.Commands.AddPlayerInTheGame
 {
-    public class AddPlayerInTheGameCommandHandler : IRequestHandler<AddPlayerInTheGameCommand, AddPlayerInTheGameCommandResponseDTO>
+    public class AddPlayerInTheGameCommandHandler : IRequestHandler<AddPlayerInTheGameCommand, StartGameResponseDTO>
     {
         private readonly Notifications.INotification _notification;
         private readonly IGameRepository _gameRepository;
@@ -24,7 +24,7 @@ namespace PlanningPoker.Domain.Commands.AddPlayerInTheGame
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<AddPlayerInTheGameCommandResponseDTO> Handle(AddPlayerInTheGameCommand request, CancellationToken cancellationToken)
+        public async Task<StartGameResponseDTO> Handle(AddPlayerInTheGameCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -38,7 +38,10 @@ namespace PlanningPoker.Domain.Commands.AddPlayerInTheGame
                 var player = new Player(request.PlayerNickname, game.Id);
                 await _gameRepository.AddPlayerAsync(player, cancellationToken);
 
-                var result = await BuildResultAsync(game, player, cancellationToken);
+                var result = await new StartGameResponseBuilder(_mediator)
+                    .WithGame(game).WithPlayer(player)
+                    .BuildAsync(cancellationToken);
+
                 await _unitOfWork.CommitAsync(cancellationToken);
                 return result;
             }
@@ -48,20 +51,6 @@ namespace PlanningPoker.Domain.Commands.AddPlayerInTheGame
                 _unitOfWork.Rollback();
                 return null;
             }
-        }
-
-        private async Task<AddPlayerInTheGameCommandResponseDTO> BuildResultAsync(Game game, Player player, CancellationToken cancellationToken)
-        {
-            var deck = await _mediator.Send(new GetDeckByIdQuery(game.DeckId), cancellationToken);
-            var deckItems = await _mediator.Send(new GetDeckItemsDTOByDeckIdQuery(game.DeckId), cancellationToken);
-            var players = await _mediator.Send(new GetGamePlayersQuery(game.Id), cancellationToken);
-            var rounds = await _mediator.Send(new GetGameRoundsQuery(game.Id), cancellationToken);
-            var activeRound = await _mediator.Send(new GetActiveRoundQuery(game.Id), cancellationToken);
-            var activeRoundPlays = activeRound is null
-                ? null
-                : await _mediator.Send(new GetRoundPlaysQuery(activeRound.Id), cancellationToken);
-
-            return new(player, game, deck, deckItems, players, rounds, activeRoundPlays);
         }
     }
 }
