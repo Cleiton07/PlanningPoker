@@ -2,7 +2,7 @@
 using PlanningPoker.Domain.Builders;
 using PlanningPoker.Domain.Core.DTOs;
 using PlanningPoker.Domain.Core.Interfaces;
-using PlanningPoker.Domain.Core.Interfaces.Repositories;
+using PlanningPoker.Domain.Core.Interfaces.WriteOnlyRepositories;
 using PlanningPoker.Domain.Core.Models;
 using PlanningPoker.Domain.Queries.GameQueries;
 using Notifications = PlanningPoker.Domain.Core.Notification;
@@ -12,14 +12,15 @@ namespace PlanningPoker.Domain.Commands.AddPlayerInTheGame
     public class AddPlayerInTheGameCommandHandler : IRequestHandler<AddPlayerInTheGameCommand, StartGameResponseDTO>
     {
         private readonly Notifications.INotification _notification;
-        private readonly IGameRepository _gameRepository;
+        private readonly IGamesWriteOnlyRepository _gamesWriteRepository;
         private readonly IMediator _mediator;
         private readonly IUnitOfWork _unitOfWork;
 
-        public AddPlayerInTheGameCommandHandler(Notifications.INotification notification, IGameRepository gameRepository, IMediator mediator, IUnitOfWork unitOfWork)
+        public AddPlayerInTheGameCommandHandler(Notifications.INotification notification, IGamesWriteOnlyRepository gamesWriteRepository, 
+            IMediator mediator, IUnitOfWork unitOfWork)
         {
             _notification = notification;
-            _gameRepository = gameRepository;
+            _gamesWriteRepository = gamesWriteRepository;
             _mediator = mediator;
             _unitOfWork = unitOfWork;
         }
@@ -36,7 +37,7 @@ namespace PlanningPoker.Domain.Commands.AddPlayerInTheGame
                 var game = await _mediator.Send(new GetGameByInviteCodeQuery(request.GameInviteCode), cancellationToken);
 
                 var player = new Player(request.PlayerNickname, game.Id);
-                await _gameRepository.AddPlayerAsync(player, cancellationToken);
+                await _gamesWriteRepository.AddPlayerAsync(player, cancellationToken);
 
                 var result = await new StartGameResponseBuilder(_mediator)
                     .WithGame(game).WithPlayer(player)

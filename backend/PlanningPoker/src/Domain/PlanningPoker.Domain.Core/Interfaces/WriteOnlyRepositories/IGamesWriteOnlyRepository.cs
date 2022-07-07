@@ -1,8 +1,8 @@
 ﻿using PlanningPoker.Domain.Core.Models;
 
-namespace PlanningPoker.Domain.Core.Interfaces.Repositories
+namespace PlanningPoker.Domain.Core.Interfaces.WriteOnlyRepositories
 {
-    public interface IGameRepository
+    public interface IGamesWriteOnlyRepository
     {
         Task AddAsync(Game game, CancellationToken cancellationToken = default);
         Task AddPlayerAsync(Player player, CancellationToken cancellationToken = default);

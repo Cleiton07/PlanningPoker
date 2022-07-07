@@ -3,10 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PlanningPoker.Domain.Core.Interfaces;
-using PlanningPoker.Domain.Core.Interfaces.Repositories;
+using PlanningPoker.Domain.Core.Interfaces.WriteOnlyRepositories;
 using PlanningPoker.Infra.Data;
 using PlanningPoker.Infra.Data.Contexts;
-using PlanningPoker.Infra.Data.Repositories;
+using PlanningPoker.Infra.Data.Repositories.Decks;
+using PlanningPoker.Infra.Data.Repositories.Games;
 using Notifications = PlanningPoker.Domain.Core.Notification;
 
 namespace PlanningPoker.Infra.IoC
@@ -29,8 +30,8 @@ namespace PlanningPoker.Infra.IoC
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            services.AddScoped<IDeckRepository, DeckRepository>();
-            services.AddScoped<IGameRepository, GameRepository>();
+            services.AddScoped<IDecksWriteOnlyRepository, DecksWriteOnlyRepository>();
+            services.AddScoped<IGamesWriteOnlyRepository, GamesWriteOnlyRepository>();
 
             return services;
         }

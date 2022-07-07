@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using PlanningPoker.Domain.Core.DTOs;
 using PlanningPoker.Domain.Core.Interfaces;
-using PlanningPoker.Domain.Core.Interfaces.Repositories;
+using PlanningPoker.Domain.Core.Interfaces.WriteOnlyRepositories;
 using PlanningPoker.Domain.Core.Models;
 using PlanningPoker.Domain.Queries.GameQueries;
 using Notifications = PlanningPoker.Domain.Core.Notification;
@@ -12,15 +12,15 @@ namespace PlanningPoker.Domain.Commands.StartNewRound
     {
         private readonly Notifications.INotification _notification;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IGameRepository _gameRepository;
+        private readonly IGamesWriteOnlyRepository _gamesWriteRepository;
         private readonly IMediator _mediator;
 
         public StartNewRoundCommandHandler(Notifications.INotification notification, IUnitOfWork unitOfWork,
-            IGameRepository gameRepository, IMediator mediator)
+            IGamesWriteOnlyRepository gamesWriteRepository, IMediator mediator)
         {
             _notification = notification;
             _unitOfWork = unitOfWork;
-            _gameRepository = gameRepository;
+            _gamesWriteRepository = gamesWriteRepository;
             _mediator = mediator;
         }
 
@@ -37,11 +37,11 @@ namespace PlanningPoker.Domain.Commands.StartNewRound
                 if (activeRound != null)
                 {
                     activeRound.Inactivate();
-                    await _gameRepository.UpdateRoundAsync(activeRound, cancellationToken);
+                    await _gamesWriteRepository.UpdateRoundAsync(activeRound, cancellationToken);
                 }
 
                 var round = new Round(request.GameId, request.RoundName);
-                await _gameRepository.AddRoundAsync(round, cancellationToken);
+                await _gamesWriteRepository.AddRoundAsync(round, cancellationToken);
 
                 await _unitOfWork.CommitAsync(cancellationToken);
                 return new(round.Id, round.Name, round.GameId);

@@ -1,14 +1,13 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PlanningPoker.Domain.Core.DTOs;
-using PlanningPoker.Domain.Core.Interfaces.Repositories;
 using PlanningPoker.Domain.Core.Models;
 using PlanningPoker.Domain.Queries.GameQueries;
 using PlanningPoker.Infra.Data.Contexts;
 
-namespace PlanningPoker.Infra.Data.Repositories
+namespace PlanningPoker.Infra.Data.Repositories.Games
 {
-    public class GameRepository : IGameRepository,
+    public class GamesReadOnlyRepository :
         IRequestHandler<GetExistsGameByInviteCodeQuery, bool>,
         IRequestHandler<GetExistsGameByIdQuery, bool>,
         IRequestHandler<GetExistsPlayerInTheGameQuery, bool>,
@@ -22,22 +21,11 @@ namespace PlanningPoker.Infra.Data.Repositories
     {
         private readonly IPlanningPokerDbContext _context;
 
-        public GameRepository(IPlanningPokerDbContext context)
+        public GamesReadOnlyRepository(IPlanningPokerDbContext context)
         {
             _context = context;
         }
-
-        public async Task AddAsync(Game game, CancellationToken cancellationToken = default)
-            => await _context.Games.AddAsync(game, cancellationToken);
-
-        public async Task AddPlayAsync(Play play, CancellationToken cancellationToken = default)
-            => await _context.Plays.AddAsync(play, cancellationToken);
-
-        public async Task AddPlayerAsync(Player player, CancellationToken cancellationToken = default)
-            => await _context.Players.AddAsync(player, cancellationToken);
-
-        public async Task AddRoundAsync(Round round, CancellationToken cancellationToken = default)
-            => await _context.Rounds.AddAsync(round, cancellationToken);
+        
 
         public async Task<bool> Handle(GetExistsGameByIdQuery request, CancellationToken cancellationToken)
             => await _context.Games.AsNoTracking().AnyAsync(game => game.Id == request.GameId, cancellationToken);
@@ -92,8 +80,5 @@ namespace PlanningPoker.Infra.Data.Repositories
                 .Where(round => round.GameId == request.GameId)
                 .Select(round => new RoundDTO(round.Id, round.Name, round.Active))
                 .ToListAsync(cancellationToken);
-
-        public async Task UpdateRoundAsync(Round round, CancellationToken cancellationToken = default)
-            => await _context.UpdateAsync(round, cancellationToken);
     }
 }

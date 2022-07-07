@@ -1,21 +1,21 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PlanningPoker.Domain.Core.DTOs;
-using PlanningPoker.Domain.Core.Interfaces.Repositories;
+using PlanningPoker.Domain.Core.Interfaces.WriteOnlyRepositories;
 using PlanningPoker.Domain.Core.Models;
 using PlanningPoker.Domain.Queries.DeckQueries;
 using PlanningPoker.Infra.Data.Contexts;
 
-namespace PlanningPoker.Infra.Data.Repositories
+namespace PlanningPoker.Infra.Data.Repositories.Decks
 {
-    public class DeckRepository : IDeckRepository,
+    public class DecksReadOnlyRepository : IDecksWriteOnlyRepository,
         IRequestHandler<GetDeckByIdQuery, Deck>,
         IRequestHandler<GetExistsDeckByIdQuery, bool>,
         IRequestHandler<GetDeckItemsDTOByDeckIdQuery, IList<DeckItemDTO>>
     {
         private readonly IPlanningPokerDbContext _context;
 
-        public DeckRepository(IPlanningPokerDbContext context)
+        public DecksReadOnlyRepository(IPlanningPokerDbContext context)
         {
             _context = context;
         }
