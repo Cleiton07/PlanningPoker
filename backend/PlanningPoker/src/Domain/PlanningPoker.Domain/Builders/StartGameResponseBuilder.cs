@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using PlanningPoker.Domain.Builders.interfaces;
 using PlanningPoker.Domain.Core.DTOs;
 using PlanningPoker.Domain.Core.Models;
 using PlanningPoker.Domain.Queries.DeckQueries;
@@ -6,7 +7,7 @@ using PlanningPoker.Domain.Queries.GameQueries;
 
 namespace PlanningPoker.Domain.Builders
 {
-    public class StartGameResponseBuilder
+    public class StartGameResponseBuilder : IStartGameResponseBuilder
     {
         private readonly IMediator _mediator;
 
@@ -18,13 +19,13 @@ namespace PlanningPoker.Domain.Builders
         private Game Game { get; set; }
         private Player Player { get; set; }
 
-        public StartGameResponseBuilder WithGame(Game game)
+        public IStartGameResponseBuilder WithGame(Game game)
         {
             Game = game;
             return this;
         }
 
-        public StartGameResponseBuilder WithPlayer(Player player)
+        public IStartGameResponseBuilder WithPlayer(Player player)
         {
             Player = player;
             return this;

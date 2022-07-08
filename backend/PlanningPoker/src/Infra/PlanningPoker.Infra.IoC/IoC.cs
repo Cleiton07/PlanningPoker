@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PlanningPoker.Domain.Builders;
+using PlanningPoker.Domain.Builders.interfaces;
 using PlanningPoker.Domain.Core.Interfaces;
 using PlanningPoker.Domain.Core.Interfaces.WriteOnlyRepositories;
 using PlanningPoker.Infra.Data;
@@ -39,6 +41,11 @@ namespace PlanningPoker.Infra.IoC
         private static IServiceCollection AddDomain(this IServiceCollection services)
         {
             services.AddScoped<Notifications.INotification, Notifications.Notification>();
+
+            #region Builders
+            services.AddScoped<IStartGameResponseBuilder, StartGameResponseBuilder>();
+            #endregion
+
             return services;
         }
     }
