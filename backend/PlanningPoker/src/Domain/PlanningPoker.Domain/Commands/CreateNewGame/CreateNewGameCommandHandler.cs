@@ -14,14 +14,12 @@ namespace PlanningPoker.Application.Commands.CreateNewGame
         private readonly IUnitOfWork _unitOfWork;
         private readonly IGamesWriteOnlyRepository _gamesWriteRepository;
         private readonly IStartGameResponseBuilder _startGameResponseBuilder;
-        private readonly IMediator _mediator;
 
-        public CreateNewGameCommandHandler(Notifications.INotification notification, IUnitOfWork unitOfWork, IMediator mediator,
+        public CreateNewGameCommandHandler(Notifications.INotification notification, IUnitOfWork unitOfWork,
             IGamesWriteOnlyRepository gamesWriteRepository, IStartGameResponseBuilder startGameResponseBuilder)
         {
             _notification = notification;
             _unitOfWork = unitOfWork;
-            _mediator = mediator;
             _gamesWriteRepository = gamesWriteRepository;
             _startGameResponseBuilder = startGameResponseBuilder;
         }
