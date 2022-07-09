@@ -16,6 +16,11 @@ namespace PlanningPoker.Domain.Core.Models
             SetInitialValues(Guid.NewGuid(), name, items);
         }
 
+        public Deck(string name)
+        {
+            SetInitialValues(Guid.NewGuid(), name, default);
+        }
+
         private void SetInitialValues(Guid id, string name, IEnumerable<DeckItem> items)
         {
             Id = id;
