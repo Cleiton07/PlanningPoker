@@ -1,6 +1,6 @@
 ﻿namespace PlanningPoker.Domain.Core.Notification
 {
-    public class NotificationField : Flunt.Notifications.Notification
+    public class NotificationField
     {
         public string FieldName { get; private set; }
         public IReadOnlyCollection<string> Messages { get; private set; }

@@ -6,14 +6,16 @@ using PlanningPoker.Domain.Commands.AddPlay;
 using PlanningPoker.Domain.Commands.AddPlayerInTheGame;
 using PlanningPoker.Domain.Commands.StartNewRound;
 using PlanningPoker.Domain.Core.DTOs;
+using PlanningPoker.Domain.Queries.GameQueries;
 using Notifications = PlanningPoker.Domain.Core.Notification;
 
 namespace PlanningPoker.Application.API.Controllers.v1
 {
-    using PostGameResponse = Task<ActionResult<ResponseModel<StartGameResponseDTO>>>;
-    using PostPlayerResponse = Task<ActionResult<ResponseModel<StartGameResponseDTO>>>;
-    using PostPlayResponse = Task<ActionResult<ResponseModel<Unit>>>;
-    using PostRoundResponse = Task<ActionResult<ResponseModel<StartNewRoundCommandResponseDTO>>>;
+    using GetRoundPlaysResponse = ActionResult<ResponseModel<IList<PlayerPlayDTO>>>;
+    using PostGameResponse = ActionResult<ResponseModel<StartGameResponseDTO>>;
+    using PostPlayerResponse = ActionResult<ResponseModel<StartGameResponseDTO>>;
+    using PostPlayResponse = ActionResult<ResponseModel<Unit>>;
+    using PostRoundResponse = ActionResult<ResponseModel<StartNewRoundCommandResponseDTO>>;
 
     [Route("api/v1/games")]
     [ApiController]
@@ -24,19 +26,23 @@ namespace PlanningPoker.Application.API.Controllers.v1
         }
 
         [HttpPost]
-        public PostGameResponse PostGame([FromBody] CreateNewGameCommand command, CancellationToken cancellationToken)
+        public Task<PostGameResponse> PostGameAsync([FromBody] CreateNewGameCommand command, CancellationToken cancellationToken)
             => ExecuteAsync(command, cancellationToken);
 
         [HttpPost("players")]
-        public PostPlayerResponse PostPlayer([FromBody] AddPlayerInTheGameCommand command, CancellationToken cancellationToken)
+        public Task<PostPlayerResponse> PostPlayerAsync([FromBody] AddPlayerInTheGameCommand command, CancellationToken cancellationToken)
             => ExecuteAsync(command, cancellationToken);
 
         [HttpPost("plays")]
-        public PostPlayResponse PostPlay([FromBody] AddPlayCommand command, CancellationToken cancellationToken)
+        public Task<PostPlayResponse> PostPlayAsync([FromBody] AddPlayCommand command, CancellationToken cancellationToken)
             => ExecuteAsync(command, cancellationToken);
 
         [HttpPost("rounds")]
-        public PostRoundResponse PostRound([FromBody] StartNewRoundCommand command, CancellationToken cancellationToken)
+        public Task<PostRoundResponse> PostRoundAsync([FromBody] StartNewRoundCommand command, CancellationToken cancellationToken)
             => ExecuteAsync(command, cancellationToken);
+
+        [HttpGet("rounds/{roundId}/plays")]
+        public Task<GetRoundPlaysResponse> PostRoundAsync(Guid roundId , CancellationToken cancellationToken)
+            => ExecuteAsync(new GetRoundPlaysQuery(roundId), cancellationToken);
     }
 }
