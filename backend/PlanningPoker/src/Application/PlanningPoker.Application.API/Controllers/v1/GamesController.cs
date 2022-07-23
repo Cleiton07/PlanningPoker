@@ -42,7 +42,7 @@ namespace PlanningPoker.Application.API.Controllers.v1
             => ExecuteAsync(command, cancellationToken);
 
         [HttpGet("rounds/{roundId}/plays")]
-        public Task<GetRoundPlaysResponse> PostRoundAsync(Guid roundId , CancellationToken cancellationToken)
+        public Task<GetRoundPlaysResponse> GetRoundPlaysAsync(Guid roundId , CancellationToken cancellationToken)
             => ExecuteAsync(new GetRoundPlaysQuery(roundId), cancellationToken);
     }
 }
